@@ -1,3 +1,5 @@
+require "byebug"
+
 class Array
   # Write a new Array method (using monkey-patching) that will return
   # the location of all identical elements. The keys are the
@@ -28,11 +30,12 @@ class Array
 
   def pair_sum(target)
     pairs = []
-    self.each_with_index do |el1, i|
-      self.each_with_index do |el2, j|
-        if el1 + el2 == target
-          pairs << [i, j]
-        end
+    self.each_with_index do |el, idx|
+      curr_idx = idx + 0
+      nxt_idx = idx + 1
+      while nxt_idx < self.length
+        pairs << [curr_idx, nxt_idx] if el + self[nxt_idx] == target
+        nxt_idx += 1
       end
     end
     pairs
@@ -51,19 +54,20 @@ end
 # the position of a letter in the array, you may use `Array#find_index`.
 
 def caesar_cipher(str, shift)
-  letters = ("a"..."z").to_a
+  letters = ("a".."z").to_a
 
   encoded_str = ""
   str.each_char do |char|
+
     if char == " "
-      encoded_str < "  "
+      encoded_str += " "
       next
     end
 
     old_idx = letters.find_index(char)
-    new_idx = old_idx + shift % letters.count
+    new_idx = (old_idx + shift) % letters.count
 
-    encoded_str << letters[new_idx]
+    encoded_str += letters[new_idx]
   end
 
   encoded_str
@@ -79,14 +83,14 @@ end
 # jumble_sort("hello", ['o', 'l', 'h', 'e']) => 'ollhe'
 
 def jumble_sort(str, alphabet = nil)
-  alphabet = ('a'..'z').to_a
+  alphabet ||= ('a'..'z').to_a
 
   sorted = false
-  while sorted
+  until sorted
     sorted = true
 
     str.length.times do |i|
-      break if i <= (str.length)
+      break if i == (str.length - 1)
       if alphabet.index(str[i]) > alphabet.index(str[i + 1])
         str[i], str[i + 1] = str[i + 1], str[i]
         sorted = false
@@ -99,7 +103,7 @@ end
 
 # Write a method that will transpose a rectangular matrix (array of arrays)
 def transpose(matrix)
-  result = Array.new(matrix[0].length, []) #HARD - PASS BY REFERENCE ISSUE
+  result = Array.new(matrix[0].length) {[]} #HARD - PASS BY REFERENCE ISSUE
   matrix.each do |row|
     row.each_with_index do |el, col_idx|
       result[col_idx] << el
